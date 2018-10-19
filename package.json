@@ -14,15 +14,37 @@
   },
   "dependencies": {
     "@expo/samples": "2.1.1",
+    "buffer": "5.0.0",
     "expo": "^30.0.1",
+    "fetchival": "^0.3.3",
+    "native-base": "^2.8.1",
+    "qs": "6.3.0",
+    "ramda": "^0.25.0",
     "react": "16.3.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-30.0.0.tar.gz",
     "react-native-elements": "^0.19.1",
     "react-navigation": "^2.16.0",
+    "react-redux": "^5.0.7",
     "redux": "^4.0.1",
-    "redux-saga": "^0.16.2"
+    "redux-persist": "^5.10.0",
+    "redux-persist-transform-filter": "^0.0.18",
+    "redux-saga": "^0.16.2",
+    "redux-thunk": "2.1.0",
+    "remote-redux-devtools": "0.5.2"
   },
   "devDependencies": {
-    "jest-expo": "30.0.0"
+    "babel-eslint": "7.1.0",
+    "babel-jest": "16.0.0",
+    "babel-preset-react-native": "1.9.0",
+    "eslint": "3.9.1",
+    "eslint-config-airbnb": "12.0.0",
+    "eslint-plugin-import": "1.16.0",
+    "eslint-plugin-jsx-a11y": "2.2.3",
+    "eslint-plugin-react": "6.6.0",
+    "eslint-plugin-react-native": "2.0.0",
+    "jest": "16.0.2",
+    "jest-expo": "30.0.0",
+    "jest-react-native": "16.1.0",
+    "react-test-renderer": "15.3.2"
   }
 }

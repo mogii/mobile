@@ -1,13 +1,48 @@
 import React from 'react';
-import { Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { Platform, AsyncStorage, StyleSheet, View } from 'react-native';
+import { PersistGate } from 'redux-persist/integration/react'
 import { AppLoading, Asset, Font, Icon } from 'expo';
-import Login from './log-in';
-import { Button } from 'react-native-elements'
+import { SignedOut, SignedIn } from "./router";
+import { Provider } from 'react-redux';
+import * as session from './services/session';
+import { store, persistor } from './configureStore';
+import R from 'ramda';
 
-export default class App extends React.Component {
-  state = {
-    isLoadingComplete: false,
-  };
+import AppNavigator from './navigation/AppNavigator';
+// sagaMiddleware.run(sagas);
+
+const routeStack = [
+  { name: 'SignedOut', component: SignedOut },
+  { name: 'SignedIn', component: SignedIn },
+];
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      isLoadingComplete: false,
+      initialRoute: null,
+    };
+  }
+
+  async componentDidMount() {
+    // Waits for the redux store to be populated with the previously saved state,
+    // then it will try to auto-login the user.
+    const unsubscribe = store.subscribe(() => {
+      if (store.getState().services.persist.isHydrated) {
+        unsubscribe();
+        this.autoLogin();
+      }
+    });
+  }
+  autoLogin = () => {
+    const _this = this;
+    session.refreshToken().then(() => {
+      _this.setState({ initialRoute: routeStack[1] });
+    }).catch(() => {
+      _this.setState({ initialRoute: routeStack[0] });
+    });
+  }
 
   render() {
     if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
@@ -19,10 +54,14 @@ export default class App extends React.Component {
         />
       );
     } else {
+      console.log({ bbbb: R.path(['services', 'session', 'tokens'], store.getState()) });
       return (
         <View style={styles.container}>
-          {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-          <Login />
+          <Provider store={store}>
+            <PersistGate loading={null} persistor={persistor}>
+              <AppNavigator/>
+            </PersistGate>
+          </Provider>
         </View>
       );
     }
@@ -61,3 +100,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
 });
+
+
+export default App;
