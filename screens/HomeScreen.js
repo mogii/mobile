@@ -8,10 +8,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { Icon } from 'expo';
 import { WebBrowser } from 'expo';
 
-import { MonoText } from '../components/StyledText';
 
+import { MonoText } from '../components/StyledText';
+import TCLogo from '../assets/images/tourconnect-logo-for-white-bg';
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
     header: null,
@@ -22,78 +24,68 @@ export default class HomeScreen extends React.Component {
       <View style={styles.container}>
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
           <View style={styles.welcomeContainer}>
-            <Image
-              source={
-                __DEV__
-                  ? require('../assets/images/robot-dev.png')
-                  : require('../assets/images/robot-prod.png')
-              }
-              style={styles.welcomeImage}
-            />
+            <TCLogo/>
           </View>
 
           <View style={styles.getStartedContainer}>
-            {this._maybeRenderDevelopmentModeWarning()}
+            {this._showIntro()}
 
-            <Text style={styles.getStartedText}>Get started by opening</Text>
+            {/*<Text style={styles.getStartedText}>Get started by opening</Text>*/}
 
-            <View style={[styles.codeHighlightContainer, styles.homeScreenFilename]}>
-              <MonoText style={styles.codeHighlightText}>screens/HomeScreen.js</MonoText>
-            </View>
+            {/*<View style={[styles.codeHighlightContainer, styles.homeScreenFilename]}>*/}
+              {/*<MonoText style={styles.codeHighlightText}>screens/HomeScreen.js</MonoText>*/}
+            {/*</View>*/}
 
             <Text style={styles.getStartedText}>
-              Change this text and your app will automatically reload.
+              TourConnect has made over 25,000 connections between travel trade companies while providing a suite of tools that make doing business with industry partners easier and more efficient.
             </Text>
           </View>
 
           <View style={styles.helpContainer}>
-            <TouchableOpacity onPress={this._handleHelpPress} style={styles.helpLink}>
-              <Text style={styles.helpLinkText}>Help, it didn’t automatically reload!</Text>
+            <TouchableOpacity onPress={this._handleHelpTextPress} style={styles.helpLink}>
+              <Text style={styles.helpLinkText}>Having questions? We can help!</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
 
         <View style={styles.tabBarInfoContainer}>
-          <Text style={styles.tabBarInfoText}>This is a tab bar. You can edit it in:</Text>
-
-          <View style={[styles.codeHighlightContainer, styles.navigationFilename]}>
-            <MonoText style={styles.codeHighlightText}>navigation/MainTabNavigator.js</MonoText>
+          <Text style={styles.tabBarInfoText}>Tap here to scan a business card and connect with your partner</Text>
+          <View style={{ marginTop: 15 }}>
+            <Icon.Ionicons
+              name={`${Platform === 'ios' ? 'ios' : 'md'}-arrow-round-down`}
+              color={'rgba(0, 0, 0, 0.54)'}
+              size={40}
+            />
           </View>
+          {/*<View style={[styles.codeHighlightContainer, styles.navigationFilename]}>*/}
+            {/*<MonoText style={styles.codeHighlightText}>navigation/MainTabNavigator.js</MonoText>*/}
+          {/*</View>*/}
         </View>
       </View>
     );
   }
 
-  _maybeRenderDevelopmentModeWarning() {
-    if (__DEV__) {
-      const learnMoreButton = (
-        <Text onPress={this._handleLearnMorePress} style={styles.helpLinkText}>
-          Learn more
-        </Text>
-      );
+  _showIntro() {
+    const learnMoreButton = (
+      <Text onPress={this._handleLearnMorePress} style={styles.helpLinkText}>
+        Learn more
+      </Text>
+    );
 
-      return (
-        <Text style={styles.developmentModeText}>
-          Development mode is enabled, your app will be slower but you can use useful development
-          tools. {learnMoreButton}
-        </Text>
-      );
-    } else {
-      return (
-        <Text style={styles.developmentModeText}>
-          You are not in development mode, your app will run at full speed.
-        </Text>
-      );
-    }
+    return (
+      <Text style={styles.introText}>
+        TourConnect is an online partner management tool specifically designed for the travel and tourism industry. {learnMoreButton}
+      </Text>
+    );
   }
 
   _handleLearnMorePress = () => {
-    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/development-mode');
+    WebBrowser.openBrowserAsync('https://www.tourconnect.com/');
   };
 
-  _handleHelpPress = () => {
+  _handleHelpTextPress = () => {
     WebBrowser.openBrowserAsync(
-      'https://docs.expo.io/versions/latest/guides/up-and-running.html#can-t-see-your-changes'
+      'http://support.tourconnect.com/'
     );
   };
 }
@@ -103,7 +95,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  developmentModeText: {
+  introText: {
     marginBottom: 20,
     color: 'rgba(0,0,0,0.4)',
     fontSize: 14,
@@ -117,6 +109,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10,
     marginBottom: 20,
+    // borderColor: 'red',
+    // borderStyle: 'solid',
+    // borderWidth: 1,
   },
   welcomeImage: {
     width: 100,
@@ -127,7 +122,7 @@ const styles = StyleSheet.create({
   },
   getStartedContainer: {
     alignItems: 'center',
-    marginHorizontal: 50,
+    marginHorizontal: 30,
   },
   homeScreenFilename: {
     marginVertical: 7,
@@ -144,7 +139,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: 'rgba(96,100,109, 1)',
     lineHeight: 24,
-    textAlign: 'center',
+    textAlign: 'left',
   },
   tabBarInfoContainer: {
     position: 'absolute',
@@ -170,6 +165,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: 'rgba(96,100,109, 1)',
     textAlign: 'center',
+    paddingHorizontal: 20,
   },
   navigationFilename: {
     marginTop: 5,

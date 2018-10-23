@@ -1,4 +1,5 @@
 import * as actionTypes from './actionTypes';
+import R from 'ramda';
 
 const HISTORY_SIZE = 10;
 
@@ -11,8 +12,13 @@ export const reducer = (state = initialState, action) => {
 		case actionTypes.PUSH:
 			return {
 				...state,
-				items: [...state.items.slice(-HISTORY_SIZE), action.route],
+				items: R.uniq([...(state.items || []).slice(-HISTORY_SIZE), action.route]).filter(x => x),
 			};
+    case actionTypes.POP:
+      return {
+        ...state,
+        items: R.dropLast(1, state.items).filter(x => x),
+      };
 		default:
 			return state;
 	}

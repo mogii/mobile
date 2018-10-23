@@ -6,7 +6,7 @@ import { Button, FormLabel, FormInput, FormValidationMessage } from 'react-nativ
 import * as session from '../services/session';
 import * as api from '../services/api';
 import R from 'ramda';
-import TCLogoGlobe from '../assets/images/tourconnect-logo-globe';
+import TCLogo from '../assets/images/tourconnect-logo-for-white-bg';
 
 class Login extends React.Component {
 
@@ -51,7 +51,7 @@ class Login extends React.Component {
     return (
       <View style={styles.container}>
         <View style={styles.tourconnect}>
-          <TCLogoGlobe/>
+          <TCLogo/>
         </View>
         <FormLabel>Email</FormLabel>
         <FormInput
@@ -90,7 +90,6 @@ const styles = StyleSheet.create({
   },
   tourconnect: {
     alignItems: 'center',
-    paddingLeft: 50,
     marginTop: 100,
   },
   button: {

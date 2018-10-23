@@ -9,19 +9,21 @@ import {
 } from 'react-native';
 import R from 'ramda';
 import TCLogo from '../assets/images/tourconnect-logo';
+import * as session from '../services/session';
 
 class AuthLoadingScreen extends React.Component {
-  constructor(props) {
-    super(props);
-    this._bootstrapAsync();
+  componentDidMount() {
+    // then it will try to auto-login the user.
+    this.autoLogin();
   }
-
-  // Fetch the token from storage then navigate to our appropriate place
-  _bootstrapAsync = async () => {
-    // This will switch to the App screen or Auth screen and this loading
-    // screen will be unmounted and thrown away.
-    this.props.navigation.navigate(this.props.refreshToken ? 'Main' : 'Auth');
-  };
+  autoLogin = () => {
+    const _this = this;
+    session.refreshToken().then(() => {
+      _this.props.navigation.navigate('Main');
+    }).catch(() => {
+      _this.props.navigation.navigate('Auth');
+    });
+  }
 
   // Render any loading content that you like here
   render() {
@@ -48,6 +50,7 @@ const styles = StyleSheet.create({
 });
 export default connect(state => {
   return {
-    refreshToken: R.pathOr('', ['services', 'session', 'tokens', 'refresh', 'value'], state),
+    accessTokenExpiredAt: R.pathOr('', ['services', 'session', 'tokens', 'access', 'expiresAt'], state),
+    accessToken: R.pathOr('', ['services', 'session', 'tokens', 'access', 'value'], state),
   }
 })(AuthLoadingScreen);

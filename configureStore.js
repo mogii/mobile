@@ -10,8 +10,16 @@ import { reducer as servicesReducer } from './services/reducer';
 import * as persistActionCreators from './services/persist/actions';
 
 const appReducer = combineReducers({
-  services: servicesReducer,
-  data: dataReducer,
+  services: persistReducer({
+    key: 'services',
+    storage: AsyncStorage,
+    blacklist: ['routeHistory'],
+  }, servicesReducer),
+  data: persistReducer({
+    key: 'data',
+    storage: AsyncStorage,
+    blacklist: ['addPartner'],
+  }, dataReducer),
 });
 
 const enhancer = composeWithDevTools(
@@ -19,13 +27,8 @@ const enhancer = composeWithDevTools(
     thunk,
   )
 );
-const persistConfig = {
-  key: 'root',
-  storage: AsyncStorage,
-}
-const persistedReducer = persistReducer(persistConfig, appReducer)
 export const store = createStore(
-  persistedReducer,
+  appReducer,
   {},
   enhancer,
   // autoRehydrate(),

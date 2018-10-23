@@ -42,9 +42,9 @@ const styles = StyleSheet.create({
   },
   tourconnect: {
     marginTop: 40,
+    alignItems: 'center',
     flex: 1,
     height: 70,
-    paddingLeft: 20,
   },
   buttons: {
     flex: 4,

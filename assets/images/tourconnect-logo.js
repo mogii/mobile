@@ -5,7 +5,7 @@ import { Constants, Svg } from 'expo';
 export default class TCLogoGlobe extends Component {
   render() {
     return (
-      <Svg height={80} width={420}>
+      <Svg height={80} width={320}>
         <Svg.G>
           <Svg.Circle
             fill="#FFFFFF"

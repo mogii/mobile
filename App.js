@@ -4,17 +4,24 @@ import { PersistGate } from 'redux-persist/integration/react'
 import { AppLoading, Asset, Font, Icon } from 'expo';
 import { SignedOut, SignedIn } from "./router";
 import { Provider } from 'react-redux';
-import * as session from './services/session';
+import * as routeHistoryActions from './services/routeHistory/actions';
 import { store, persistor } from './configureStore';
 import R from 'ramda';
 
 import AppNavigator from './navigation/AppNavigator';
 // sagaMiddleware.run(sagas);
 
-const routeStack = [
-  { name: 'SignedOut', component: SignedOut },
-  { name: 'SignedIn', component: SignedIn },
-];
+const getActiveRouteName = (navigationState) => {
+  if (!navigationState) {
+    return null;
+  }
+  const route = navigationState.routes[navigationState.index];
+  // dive into nested navigators
+  if (route.routes) {
+    return getActiveRouteName(route);
+  }
+  return route.routeName;
+}
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -23,25 +30,6 @@ class App extends React.Component {
       isLoadingComplete: false,
       initialRoute: null,
     };
-  }
-
-  async componentDidMount() {
-    // Waits for the redux store to be populated with the previously saved state,
-    // then it will try to auto-login the user.
-    const unsubscribe = store.subscribe(() => {
-      if (store.getState().services.persist.isHydrated) {
-        unsubscribe();
-        this.autoLogin();
-      }
-    });
-  }
-  autoLogin = () => {
-    const _this = this;
-    session.refreshToken().then(() => {
-      _this.setState({ initialRoute: routeStack[1] });
-    }).catch(() => {
-      _this.setState({ initialRoute: routeStack[0] });
-    });
   }
 
   render() {
@@ -54,12 +42,20 @@ class App extends React.Component {
         />
       );
     } else {
-      console.log({ bbbb: R.path(['services', 'session', 'tokens'], store.getState()) });
       return (
         <View style={styles.container}>
           <Provider store={store}>
             <PersistGate loading={null} persistor={persistor}>
-              <AppNavigator/>
+              <AppNavigator
+                onNavigationStateChange={(prevState, newState, action) => {
+                  const prevScreen = getActiveRouteName(prevState);
+                  const newScreen = getActiveRouteName(newState);
+                  if (newScreen && prevScreen !== newScreen) {
+                    if (action.type === 'Navigation/BACK') store.dispatch(routeHistoryActions.pop());
+                    else store.dispatch(routeHistoryActions.push(prevScreen))
+                  }
+                }}
+              />
             </PersistGate>
           </Provider>
         </View>
