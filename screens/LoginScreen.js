@@ -16,8 +16,8 @@ class Login extends React.Component {
     this.initialState = {
       isLoading: false,
       error: null,
-      email: 'moliexx@live.cn',
-      password: '!QAZ2wsx',
+      email: '',
+      password: '',
     };
     this.state = this.initialState;
   }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, TouchableOpacity, Platform, StyleSheet, StatusBar } from 'react-native';
+import { Text, View, TouchableOpacity, Platform, StyleSheet, StatusBar, Alert } from 'react-native';
 import {Camera, Permissions, Icon, ImagePicker} from 'expo';
 import { connect } from 'react-redux';
 import R from 'ramda';
@@ -20,8 +20,19 @@ class CameraScan extends React.Component {
   }
 
   async componentWillMount() {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA);
-    this.setState({ hasCameraPermission: status === 'granted' });
+    if (this.props.user.plan !== 'connected' && this.props.user.plan !== 'unlimited') {
+      Alert.alert(
+        'Sorry',
+        'Please upgrade to use this premium feature. If you just upgraded, please try log out and log back in',
+        [
+          {text: 'OK', onPress: () => this.props.navigation.navigate('Home')},
+        ],
+        { cancelable: false }
+      )
+    } else {
+      const { status } = await Permissions.askAsync(Permissions.CAMERA);
+      this.setState({ hasCameraPermission: status === 'granted' });
+    }
   }
 
   snapAndScan = async () => {
@@ -170,6 +181,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => {
   return {
     prevScreen: R.last(state.services.routeHistory.items),
+    user: state.services.session.user,
   };
 };
 export default connect(mapStateToProps, {

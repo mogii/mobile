@@ -15,7 +15,10 @@ export const processWithOCRNLP = image => {
     dispatch({ type: `${actionTypes.PROCESS_IMAGE}_START`, payload: { image, processing: true } })
     return api.scanBusinessCard({ image: image.base64 })
       .then(result => {
-        return dispatch({ type: `${actionTypes.PROCESS_IMAGE}_SUCCESS`, payload: { ...result.data, processing: false } });
+        return dispatch({
+          type: `${actionTypes.PROCESS_IMAGE}_SUCCESS`,
+          payload: { ...result.data, email: result.data.emails[0], phone: result.data.phonenumbers[0], processing: false }
+        });
       })
     .catch(() => dispatch({ type: `${actionTypes.PROCESS_IMAGE}_ERROR` }))
   }
@@ -29,7 +32,7 @@ export const addPartner = () => {
       tags: state.tags,
       companyName: state.ORGANIZATION,
       name: state.PERSON,
-      email: state.emails[0],
+      email: state.email,
       message: state.message,
     };
     return api.addPartner(payload)

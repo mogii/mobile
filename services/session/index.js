@@ -39,7 +39,6 @@ const onRequestFailed = (exception) => {
 
 export const refreshToken = () => {
 	const session = selectors.get();
-console.log('refreshToken', session.tokens.refresh, 'refreshToken');
 	if (!session.tokens.refresh.value || !session.user._id) {
 		return Promise.reject();
 	}

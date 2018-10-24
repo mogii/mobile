@@ -52,7 +52,7 @@ export default class HomeScreen extends React.Component {
           <Text style={styles.tabBarInfoText}>Tap here to scan a business card and connect with your partner</Text>
           <View style={{ marginTop: 15 }}>
             <Icon.Ionicons
-              name={`${Platform === 'ios' ? 'ios' : 'md'}-arrow-round-down`}
+              name={`${Platform.OS === 'ios' ? 'ios' : 'md'}-arrow-round-down`}
               color={'rgba(0, 0, 0, 0.54)'}
               size={40}
             />

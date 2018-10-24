@@ -7,8 +7,10 @@ import {
   ActivityIndicator,
   ScrollView,
   TouchableOpacity,
+  TouchableHighlight,
   Platform,
   StatusBar,
+  Modal,
 } from 'react-native';
 import { FormLabel, FormInput, Button } from 'react-native-elements';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -19,21 +21,49 @@ import {
   addPartner as addPartnerAction,
 } from '../../data/addPartner/actions';
 import R from 'ramda';
-import Colors from "../../constants/Colors";
-import {Camera, Icon} from "expo";
+import { Icon } from "expo";
 
 class ResultConfirmation extends React.Component {
   constructor() {
     super();
-    this.state = {};
+    this.state = {
+      typeForPicker: {},
+      pickerModalVisable: false,
+    };
   }
 
   componentWillUnmount() {
     this.props.empty();
   }
-
+  closePickerModal = () => {
+    this.setState({
+      pickerModalVisable: false,
+      typeForPicker: {}
+    })
+  };
+  openPickerModal = (type) => {
+    this.setState({ pickerModalVisable: true, typeForPicker: type });
+  };
   render() {
-    let { processing, partnerAdded, image, PERSON, ORGANIZATION, emails, tags, message } = this.props;
+    let { processing, partnerAdded, image, PERSON, ORGANIZATION, allTextBlobs, emails, tags, message } = this.props;
+    const fields = [
+      {
+        label: 'Company Name',
+        key: 'ORGANIZATION',
+      },
+      {
+        label: 'Contact Name',
+        key: 'PERSON',
+      },
+      {
+        label: 'Email',
+        key: 'email',
+      },
+      {
+        label: 'Phone',
+        key: 'phone',
+      }
+    ];
     if (partnerAdded) {
       return (
         <View style={styles.container}>
@@ -79,63 +109,30 @@ class ResultConfirmation extends React.Component {
         {
           processing && (<ActivityIndicator size="large" color="#00bcd4" animating={processing}/>)
         }
-        <FormLabel>Organization</FormLabel>
-        <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-          <FormInput
-            multiline
-            containerStyle={styles.formInputContainer}
-            inputStyle={styles.formInput}
-            value={ORGANIZATION}
-            onChangeText={text => this.props.update({ ORGANIZATION: text })}
-          />
-          {
-            Boolean(ORGANIZATION) && (
-              <TouchableOpacity
-                style={{ width: 50 }}
-                onPress={() => this.props.update({ ORGANIZATION: '' })}>
-                <Text style={{ fontSize: 12, color: '#2e78b7' }}>x Clear</Text>
-              </TouchableOpacity>
+        {
+          fields.map(({ label, key }) => {
+            return (
+              <View key={key}>
+                <FormLabel>{label}: </FormLabel>
+                <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
+                  <FormInput
+                    multiline
+                    containerStyle={styles.formInputContainer}
+                    inputStyle={styles.formInput}
+                    value={this.props[key]}
+                    onChangeText={text => this.props.update({ [key]: text })}
+                  />
+                  <TouchableOpacity
+                    style={{ width: 30 }}
+                    onPress={() => this.openPickerModal({ label, key })}
+                  >
+                    <Icon.Ionicons name={`${Platform.OS === 'ios' ? 'ios' : 'md'}-arrow-down`} size={25} color={'#2e78b7'}/>
+                  </TouchableOpacity>
+                </View>
+              </View>
             )
-          }
-        </View>
-        <FormLabel>Person:</FormLabel>
-        <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-          <FormInput
-            multiline
-            containerStyle={styles.formInputContainer}
-            inputStyle={styles.formInput}
-            value={PERSON}
-            onChangeText={text => this.props.update({ PERSON: text })}
-          />
-          {
-            Boolean(PERSON) && (
-              <TouchableOpacity
-                style={{ width: 50 }}
-                onPress={() => this.props.update({ PERSON: '' })}>
-                <Text style={{ fontSize: 12, color: '#2e78b7' }}>x Clear</Text>
-              </TouchableOpacity>
-            )
-          }
-        </View>
-        <FormLabel>Email:</FormLabel>
-        <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-          <FormInput
-            multiline
-            containerStyle={styles.formInputContainer}
-            inputStyle={styles.formInput}
-            value={emails[0]}
-            onChangeText={text => this.props.update({ emails: [text] })}
-          />
-          {
-            Boolean(emails[0]) && (
-              <TouchableOpacity
-                style={{ width: 50 }}
-                onPress={() => this.props.update({ emails: [] })}>
-                <Text style={{ fontSize: 12, color: '#2e78b7' }}>x Clear</Text>
-              </TouchableOpacity>
-            )
-          }
-        </View>
+          })
+        }
         <FormLabel>Tags:</FormLabel>
         {
           tags && tags.map((tag, i) => {
@@ -196,11 +193,61 @@ class ResultConfirmation extends React.Component {
           title="Send Message"
           onPress={this.props.addPartner}
         />
+
+        <Modal
+          visible={this.state.pickerModalVisable}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={this.closePickerModal}
+        >
+          <View
+            style={{
+              flex: 1,
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: '80%',
+              marginLeft: '10%'
+            }}
+          >
+            <View style={{ height: 400, borderRadius: 4, width: '100%', backgroundColor: '#00bcd4', padding: 12 }}>
+              <Text style={{ color: '#fafafa', fontSize: 16, marginBottom: 20 }}>Select value for {this.state.typeForPicker.label}</Text>
+              <ScrollView>
+                {
+                  allTextBlobs.map((text, i) => (
+                    <TouchableHighlight
+                      key={i}
+                      style={{ borderBottomColor: '#fff', borderStyle: 'solid', borderBottomWidth: 1, flex: 1, padding: 12 }}
+                      onPress={() => {
+                        this.props.update({ [this.state.typeForPicker.key]: text });
+                        this.closePickerModal();
+                      }}
+                    >
+                      <Text style={{ color: 'white', fontSize: 14 }}>{text}</Text>
+                    </TouchableHighlight>
+                  ))
+                }
+              </ScrollView>
+              <Button
+                small
+                buttonStyle={{ backgroundColor: 'transparent', alignSelf: 'flex-end', borderRadius: 3, ...border, borderColor: 'white', padding: 4 }}
+                textStyle={{ color: '#fff' }}
+                title={'DISMISS'}
+                onPress={this.closePickerModal}
+              />
+            </View>
+          </View>
+        </Modal>
       </KeyboardAwareScrollView>
     );
   }
 
 }
+const border = {
+  borderWidth: 1,
+  borderStyle: 'solid',
+  borderColor: 'red',
+};
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -249,6 +296,19 @@ const styles = StyleSheet.create({
     marginBottom: 48,
     width: '50%',
     alignSelf: 'center',
+  },
+});
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 16,
+    paddingTop: 13,
+    paddingHorizontal: 10,
+    paddingBottom: 12,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 4,
+    backgroundColor: 'white',
+    color: 'black',
   },
 });
 const mapStateToProps = state => {

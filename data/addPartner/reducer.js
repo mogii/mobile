@@ -7,6 +7,7 @@ const initialState = {
   image: null,
   PERSON: null,
   ORGANIZATION: null,
+  allTextBlobs: [],
   emails: [],
   tags: ['WTM 2018'],
   message: 'It was great to meet you at WTM!  As discussed, here\'s the link to connect and get started on TourConnect.  I look forward to speaking with you again soon.',
